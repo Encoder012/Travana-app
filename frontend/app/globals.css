@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+
+body {
+  font-family: "Inter", sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  :root {
+    --background: 210 11% 15%;
+    --foreground: 0 0% 98%;
+    --card: 210 11% 15%;
+    --card-foreground: 0 0% 98%;
+    --popover: 210 11% 15%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 84 100% 59%;
+    --primary-foreground: 210 11% 15%;
+    --secondary: 210 11% 21%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 210 11% 21%;
+    --muted-foreground: 0 0% 70%;
+    --accent: 84 100% 59%;
+    --accent-foreground: 210 11% 15%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 210 11% 25%;
+    --input: 210 11% 21%;
+    --ring: 84 100% 59%;
+    --radius: 1rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .dark-card {
+    @apply bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl;
+  }
+
+  .dark-card-hover {
+    @apply hover:bg-gray-800/70 hover:border-gray-600/50 transition-all duration-300;
+  }
+
+  .primary-button {
+    @apply bg-lime-400 text-gray-900 font-semibold rounded-2xl hover:bg-lime-300 transition-all duration-300 shadow-lg hover:shadow-xl;
+  }
+
+  .secondary-button {
+    @apply bg-gray-800 text-white border border-gray-700 font-medium rounded-2xl hover:bg-gray-700 transition-all duration-300;
+  }
+
+  .input-field {
+    @apply bg-gray-800/50 border border-gray-700/50 rounded-2xl px-4 py-3 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400/50 transition-all duration-300;
+  }
+
+  .glass-card {
+    @apply bg-gray-900/80 backdrop-blur-xl border border-gray-700/30 rounded-3xl;
+  }
+
+  .accent-lime {
+    @apply text-lime-400;
+  }
+
+  .gradient-dark {
+    @apply bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900;
+  }
+
+  .status-badge {
+    @apply px-3 py-1 rounded-full text-xs font-medium;
+  }
+
+  .rating-stars {
+    @apply flex items-center space-x-1;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(31 41 55);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(75 85 99);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(107 114 128);
+}
