@@ -1,45 +1,84 @@
-const Driver = require('../models/Driver');
-const ngeohash = require('ngeohash');
+// backend/utils/blockchain.js
+const { AptosClient, AptosAccount, TxnBuilderTypes, BCS, HexString } = require("aptos");
+require("dotenv").config();
 
-function getNearbyZones(zone, precision = 5) {
-    const decoded = ngeohash.decode(zone);
-    return ngeohash.neighbors(zone).concat(zone);
-}
+const NODE_URL = process.env.APTOS_NODE_URL || "https://fullnode.testnet.aptoslabs.com/v1";
+const client = new AptosClient(NODE_URL);
+const CONTRACT_ADDRESS = "0x3a08f1d42705d5ef28cf02126c9e7c3614f73d7c5a932226e8f01dc1c0aa5e54";
+
+const RIDE_MANAGER_MODULE = `${CONTRACT_ADDRESS}::RideManager`;
+
+// Removed encodeLocationToGeohash because geohashing is now done in frontend
+
+const loadAccount = (privateKeyHex) => {
+    const privateKey = new HexString(privateKeyHex).toUint8Array();
+    return AptosAccount.fromAptosAccountObject({ privateKeyHex });
+};
+
+const lockFunds = async (wallet, amount, rideId) => {
+    const riderPrivateKey = process.env.RIDER_PRIVATE_KEY;
+    const driverAddress = wallet;
+    const account = loadAccount(riderPrivateKey);
+
+    const payload = {
+        type: "entry_function_payload",
+        function: `${RIDE_MANAGER_MODULE}::lock_funds`,
+        type_arguments: [],
+        arguments: [driverAddress, amount.toString()],
+    };
+
+    const txnRequest = await client.generateTransaction(account.address(), payload);
+    const signedTxn = await client.signTransaction(account, txnRequest);
+    const response = await client.submitTransaction(signedTxn);
+    await client.waitForTransaction(response.hash);
+    return response.hash;
+};
+
+const releaseFunds = async (rideId) => {
+    const userPrivateKey = process.env.CONFIRM_PRIVATE_KEY;
+    const account = loadAccount(userPrivateKey);
+
+    const payload = {
+        type: "entry_function_payload",
+        function: `${RIDE_MANAGER_MODULE}::confirm_ride`,
+        type_arguments: [],
+        arguments: [rideId.toString()],
+    };
+
+    const txnRequest = await client.generateTransaction(account.address(), payload);
+    const signedTxn = await client.signTransaction(account, txnRequest);
+    const response = await client.submitTransaction(signedTxn);
+    await client.waitForTransaction(response.hash);
+    return response.hash;
+};
+
+const mintNFT = async (ride) => {
+    const userPrivateKey = process.env.RIDER_PRIVATE_KEY;
+    const account = loadAccount(userPrivateKey);
+    const name = `Ride #${ride._id}`;
+    const description = `From ${ride.pickupZone} to ${ride.destinationZone}`;
+    const uri = "https://ipfs.example.com/ride-nft";
+
+    const payload = {
+        type: "entry_function_payload",
+        function: `${RIDE_MANAGER_MODULE}::mint_nft`,
+        type_arguments: [],
+        arguments: [
+            Array.from(Buffer.from(name, "utf-8")),
+            Array.from(Buffer.from(description, "utf-8")),
+            Array.from(Buffer.from(uri, "utf-8"))
+        ],
+    };
+
+    const txnRequest = await client.generateTransaction(account.address(), payload);
+    const signedTxn = await client.signTransaction(account, txnRequest);
+    const response = await client.submitTransaction(signedTxn);
+    await client.waitForTransaction(response.hash);
+    return response.hash;
+};
 
 module.exports = {
-    findDriver: async (zone, prefs) => {
-        const zones = getNearbyZones(zone);
-        const drivers = await Driver.find({
-            available: true,
-            currentZone: { $in: zones },
-            carType: prefs.carType
-        }).sort({ rating: -1 }).limit(1);
-        if (drivers.length === 0) return null;
-        return {
-            wallet: drivers[0].wallet,
-            estimatedFare: Math.floor(Math.random() * 100) + 50,
-            carType: drivers[0].carType
-        };
-    },
-
-    lockFunds: async (wallet, amount, rideId) => {
-        // Simulate call to Aptos smart contract escrow
-        console.log(`Locked ${amount} APT from ${wallet} for ride ${rideId}`);
-    },
-
-    releaseFunds: async (rideId) => {
-        // Simulate releasing funds
-        console.log(`Released funds for ride ${rideId}`);
-    },
-
-    mintNFT: async (ride) => {
-        // Simulate minting ride NFT
-        const metadata = {
-            pickupZone: ride.pickupZone,
-            destinationZone: ride.destinationZone,
-            timestamp: ride.timestamp,
-            fareAmount: ride.fare
-        };
-        console.log(`Minted NFT for ride ${ride._id} with metadata`, metadata);
-    }
-};
+    lockFunds,
+    releaseFunds,
+    mintNFT
+};;
