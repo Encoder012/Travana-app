@@ -216,11 +216,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support & Community
 
-- **Website**: [https://travana.app](https://travana.app)
-- **Documentation**: [https://docs.travana.app](https://docs.travana.app)
-- **Discord**: [Join our community](https://discord.gg/travana)
-- **Twitter**: [@TravanaApp](https://twitter.com/TravanaApp)
-- **Email**: support@travana.app
+- **Website**: [https://travana-app-xi.vercel.app/](https://travana-app-xi.vercel.app/)
 
 ## 🗺️ Roadmap
 
