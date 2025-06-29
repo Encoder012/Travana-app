@@ -107,7 +107,7 @@ export default function BrochurePage() {
                         </h1>
 
                         <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-                            The world's first <span className="text-lime-400 font-semibold">privacy-preserving</span>,
+                            a <span className="text-lime-400 font-semibold">privacy-preserving</span>,
                             <span className="text-lime-400 font-semibold"> blockchain-powered</span> ride-sharing platform. Your
                             journey, your data, your rewards.
                         </p>
