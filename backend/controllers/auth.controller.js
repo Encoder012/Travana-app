@@ -3,6 +3,7 @@ const asyncHandler = require('../utils/asyncHandler');
 const ApiError = require('../utils/apiError')
 const login = asyncHandler(
     async (req, res) => {
+        console.log(req.body)
         const { wallet } = req.body;
         if (!wallet) {
             throw new ApiError(400, "Wallet address is required")
